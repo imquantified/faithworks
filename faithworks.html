@@ -1,0 +1,50 @@
+<head>
+	<title>Faithworks</title>
+</head>
+
+<body>
+	<div class="container">
+		<header>
+			<h1>Faithworks</h1>
+
+			{{> numberToday}}
+
+			<ul>
+				{{#each topFives}}
+					{{> topFive}}
+				{{/each}}
+			</ul>
+		</header>
+
+		{{> loginButtons}}
+
+		{{#if currentUser}}
+			<form class="new-task">
+				<input type="text" name="text" placeholder="Type to add new tasks" />
+			</form>
+			<ul>
+				{{#each tasks}}
+					{{> task}}
+				{{/each}}
+			</ul>
+			{{> numberTotal}}
+		{{/if}}
+	</div>
+
+</body>
+
+<template name="task">
+	<li>{{text}} - {{prettyDate createdAt}}</li>
+</template>
+
+<template name="topFive">
+	<li>{{text}} - {{prettyDate createdAt}}</li>
+</template>
+
+<template name="numberTotal">
+	<h1>{{numberTotal}}</h1>
+</template>
+
+<template name="numberToday">
+	<h1>{{numberToday}}</h1>
+</template>
