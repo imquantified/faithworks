@@ -34,12 +34,8 @@
 </body>
 
 <template name="task">
-	<li>{{text}} - {{username}} - {{prettyDate createdAt}} <button class="edit-task">Edit</button> <button class="delete">Delete</button></li>
-	{{#if isEditable}}
-		<form class="edit-field">
-			<input type="text" name="text" placeholder="Type to edit current tasks" />
-		</form>
-	{{/if}}
+	<li class="">{{text}} - {{username}} - {{prettyDate createdAt}} <button class="edit-task">Edit</button> <button class="delete">Delete</button></li>
+	{{{selectedClass}}}
 </template>
 
 <template name="topFive">

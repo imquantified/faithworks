@@ -19,7 +19,17 @@ if (Meteor.isClient) {
 		},
 		topFives: function () {
 			return Tasks.find({}, {limit: 5, sort: {createdAt: -1}});
-		}
+		},
+	});
+
+	Template.task.helpers({
+		selectedClass: function() {
+			var taskId = this._id;
+			var selectedTask = Session.get('selectedTask');
+			if (taskId == selectedTask) {
+				return "<form class=\"edit-field\"><input type=\"text\" name=\"text\" placeholder=\"Type to edit current tasks\"/></form>";
+			}
+		},
 	});
 
 	Template.numberTotal.helpers({
@@ -41,15 +51,8 @@ if (Meteor.isClient) {
 	Template.body.events({
 		"submit .new-task": function (event) {
 			var text = event.target.text.value;
-			var owner = Meteor.userId();
-			var username = Meteor.user().username;
 
-			Tasks.insert({
-				text: text,
-				createdAt: new Date(),
-				owner: owner,
-				username: username
-			});
+			Meteor.call("addTask", text);
 
 			// Clear form
 			event.target.text.value = "";
@@ -59,34 +62,23 @@ if (Meteor.isClient) {
 		},
 
 		"click .delete": function (event) {
-			Tasks.remove(this._id);
+			Meteor.call("deleteTask", this._id);
+			// Tasks.remove(this._id);
 		},
 
-		"click .edit-task": function (event) {
-			var current = Session.get("editTask");
-
-			if (current == true) { 
-				Session.set("editTask", false); 
-			}
-			else { 
-				Session.set("editTask", true); 
-			}
+		"click .edit-task": function () {
+			var currentTask = this._id;
+			Session.set('selectedTask', currentTask);
 		},
 		"submit .edit-field": function (event) {
 			var text = event.target.text.value;
 			var userId = Meteor.userId();
-			var task = Tasks.find(this._id);
-
-			//if (userId == task.owner) {
-				Tasks.update(this._id, {$set: {text: text}});
-				// Clear form
-				event.target.text.value = "";
-			//}
+			Meteor.call("editThisTask", this._id, text);
+			Session.set("selectedTask", null);
+			event.target.text.value = "";
 			
 			// Prevent default form submit
 			return false;
-
-			Session.set("editTask", false);
 		}
 	});
 
@@ -94,4 +86,38 @@ if (Meteor.isClient) {
 		passwordSignupFields: "USERNAME_ONLY"
 	});
 }
+
+Meteor.methods({
+  addTask: function (text) {
+	// Make sure the user is logged in before inserting a task
+	if (! Meteor.userId()) {
+	  throw new Meteor.Error("not-authorized");
+	}
+	if (text) {
+		Tasks.insert({
+		  text: text,
+		  createdAt: new Date(),
+		  owner: Meteor.userId(),
+		  username: Meteor.user().username
+		});
+	} else { throw new Meteor.Error("Please enter some text for the message"); }
+  },
+  deleteTask: function (taskId) {
+	if (! Meteor.userId()) {
+	  throw new Meteor.Error("not-authorized");
+	}
+	Tasks.remove(taskId);
+  },
+  findThisTask: function (taskId) {
+	Tasks.find(taskId);
+  },
+  editThisTask: function (taskId, text) {
+	if (! Meteor.userId()) {
+	  throw new Meteor.Error("not-authorized");
+	}
+	if (text && taskId) {
+		Tasks.update(taskId, {$set: {text: text}});
+	} else { throw new Meteor.Error("no text or id"); }
+  }
+});
 
