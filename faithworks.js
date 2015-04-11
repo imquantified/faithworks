@@ -1,6 +1,13 @@
 Tasks = new Mongo.Collection("tasks");
 
+if (Meteor.isServer) { 
+	Meteor.publish("tasks", function () {
+		return Tasks.find();
+	});
+}
+
 if (Meteor.isClient) {
+	Meteor.subscribe("tasks");
 
 	Template.registerHelper("prettyDate", function(timestamp) {
 		return moment(new Date(timestamp)).fromNow();
@@ -8,6 +15,16 @@ if (Meteor.isClient) {
 
 	Template.registerHelper("isEditable", function() {
 		return Session.equals("editTask", true);
+	});
+
+	Template.registerHelper("isRightUser", function() {
+		var currentUser = Meteor.userId();
+		var task = Tasks.find(this._id).fetch();
+		var taskOwner = task['0']['owner'];
+		if ((taskOwner == currentUser)) {
+			return true;
+		}
+		return false;
 	});
 
 	Template.body.helpers({
@@ -29,6 +46,9 @@ if (Meteor.isClient) {
 			if (taskId == selectedTask) {
 				return "<form class=\"edit-field\"><input type=\"text\" name=\"text\" placeholder=\"Type to edit current tasks\"/></form>";
 			}
+		},
+		correctUser: function() {
+
 		},
 	});
 
@@ -103,7 +123,10 @@ Meteor.methods({
 	} else { throw new Meteor.Error("Please enter some text for the message"); }
   },
   deleteTask: function (taskId) {
-	if (! Meteor.userId()) {
+	var currentUser = Meteor.userId();
+	var task = Tasks.find(taskId).fetch();
+	var taskOwner = task['0']['owner'];
+	if (taskOwner != currentUser) {
 	  throw new Meteor.Error("not-authorized");
 	}
 	Tasks.remove(taskId);
@@ -112,7 +135,10 @@ Meteor.methods({
 	Tasks.find(taskId);
   },
   editThisTask: function (taskId, text) {
-	if (! Meteor.userId()) {
+	var currentUser = Meteor.userId();
+	var task = Tasks.find(taskId).fetch();
+	var taskOwner = task['0']['owner'];
+	if (taskOwner != currentUser) {
 	  throw new Meteor.Error("not-authorized");
 	}
 	if (text && taskId) {
@@ -120,4 +146,3 @@ Meteor.methods({
 	} else { throw new Meteor.Error("no text or id"); }
   }
 });
-

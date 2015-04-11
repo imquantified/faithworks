@@ -34,7 +34,7 @@
 </body>
 
 <template name="task">
-	<li class="">{{text}} - {{username}} - {{prettyDate createdAt}} <button class="edit-task">Edit</button> <button class="delete">Delete</button></li>
+	<li class="">{{text}} - {{username}} - {{prettyDate createdAt}} {{#if isRightUser}}<button class="edit-task">Edit</button> <button class="delete">Delete</button>{{/if}}</li>
 	{{{selectedClass}}}
 </template>
 
