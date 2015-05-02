@@ -1,51 +1,94 @@
 <head>
 	<title>Faithworks</title>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
-	<div class="container">
-		<header>
-			<h1>Faithworks</h1>
+	<div class="navbar">
+		<h1>Faithworks</h1>
+		<div class="text_center">
+			<button type="button" class="btn btn-default btn-lg btn-block">
+				{{> loginButtons}}
+			</button>
+		</div>
+	</div>
 
-			{{> numberToday}}
 
-			<ul>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xs-12 text_center">
+				<p id="top_title">Faith-works</p>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-12">
+				{{> numberToday}}
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-10 text_center">
+				<blockquote class="blockquote-reverse">
+				<h3 id="main_tagline">People have met their goal to meet with God today. You should too!</h3>
+				</blockquote>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-12">
 				{{#each topFives}}
 					{{> topFive}}
 				{{/each}}
-			</ul>
-		</header>
+			</div>
+		</div>
+	</div>
 
-		{{> loginButtons}}
-
+	<div class="container-fluid">
 		{{#if currentUser}}
-			<form class="new-task">
-				<input type="text" name="text" placeholder="Type to add new tasks" />
-			</form>
-			<ul>
-				{{#each tasks}}
-					{{> task}}
-				{{/each}}
-			</ul>
+			<div class="row">
+				<div class="col-xs-12">
+					<form class="new-task">
+						<input type="text" name="text" id="main_field" placeholder="What did you learn today?" />
+						<button type="submit" class="btn btn-default">Submit.</button>
+					</form>
+				</div>
+			</div>
+			<!-- <div class="row">
+				<div class="col-xs-12">
+					<form class="new-task">
+						<textarea type="text" name="text" class="form-control" rows="3" placeholder="What did you learn today?"></textarea>
+						<button type="submit" class="btn btn-default">Submit.</button>
+					</form>
+				</div>
+			</div> -->
+			{{#each tasks}}
+				{{> task}}
+			{{/each}}
 			{{> numberTotal}}
 		{{/if}}
 	</div>
-
 </body>
 
 <template name="task">
-	<li class="">{{text}} - {{username}} - {{prettyDate createdAt}} {{#if isRightUser}}<button class="edit-task">Edit</button> <button class="delete">Delete</button>{{/if}}</li>
-	{{{selectedClass}}}
+	<div class="row">
+		<div class="col-xs-12 messages">{{text}} - <strong>{{username}}</strong> - <span class="timestamp">{{prettyDate createdAt}}</span> {{#if isRightUser}}<button class="edit-task">Edit</button> <button class="delete">Delete</button>{{/if}}</div>
+		{{{selectedClass}}}
+	</div>
 </template>
 
 <template name="topFive">
-	<li>{{text}} - {{prettyDate createdAt}}</li>
+	<div class="row">
+		<div class="col-xs-12 messages">{{text}} - <span class="timestamp">{{prettyDate createdAt}}</span></div>
+	</div>
 </template>
 
 <template name="numberTotal">
-	<h1>{{numberTotal}}</h1>
+	<h1 class="row number_today">{{numberTotal}}</h1>
 </template>
 
 <template name="numberToday">
-	<h1>{{numberToday}}</h1>
+	<h1 class="number_today">{{numberToday}}</h1>
 </template>

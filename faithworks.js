@@ -78,7 +78,7 @@ if (Meteor.isClient) {
 			event.target.text.value = "";
 
 			// Prevent default form submit
-			return false;
+			// return false;
 		},
 
 		"click .delete": function (event) {
